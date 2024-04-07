@@ -59,6 +59,9 @@ import (
 	"sigs.k8s.io/cluster-api/util/patch"
 	"sigs.k8s.io/cluster-api/util/predicates"
 	"sigs.k8s.io/cluster-api/util/secret"
+
+	//testtesttest
+	infrav1 "github.com/gy-ulbak96/cluster-api-provider-openstack/api/v1alpha7"
 )
 
 const (
@@ -989,7 +992,24 @@ func (r *KubeadmConfigReconciler) reconcileDiscovery(ctx context.Context, cluste
 			return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 		}
 
-		apiServerEndpoint = cluster.Spec.ControlPlaneEndpoint.String()
+		// apiServerEndpoint = cluster.Spec.ControlPlaneEndpoint.String()
+
+		//testtesttest
+		openStackCluster := &infrav1.OpenStackCluster{}
+		openStackClusterName := client.ObjectKey{
+			Namespace: cluster.Namespace,
+			Name:      cluster.Spec.InfrastructureRef.Name,
+		}
+		err := r.Client.Get(ctx, openStackClusterName, openStackCluster)
+		if err != nil {
+			if apierrors.IsNotFound(err) {
+				return ctrl.Result{}, nil
+			}
+			return ctrl.Result{}, err
+		}
+		apiServerEndpoint = openStackCluster.Status.AvailableServerIPs[0]
+		//testtesttest
+
 		config.Spec.JoinConfiguration.Discovery.BootstrapToken.APIServerEndpoint = apiServerEndpoint
 		log.V(3).Info("Altering JoinConfiguration.Discovery.BootstrapToken.APIServerEndpoint", "APIServerEndpoint", apiServerEndpoint)
 	}
