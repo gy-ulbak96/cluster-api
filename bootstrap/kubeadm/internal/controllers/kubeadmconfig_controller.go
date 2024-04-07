@@ -993,7 +993,7 @@ func (r *KubeadmConfigReconciler) reconcileDiscovery(ctx context.Context, cluste
 			return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 		}
 
-		apiServerEndpoint = cluster.Spec.ControlPlaneEndpoint.String()
+		// apiServerEndpoint = cluster.Spec.ControlPlaneEndpoint.String()
 
 		//testtesttest
 		openStackCluster := &infrav1.OpenStackCluster{}
@@ -1008,8 +1008,7 @@ func (r *KubeadmConfigReconciler) reconcileDiscovery(ctx context.Context, cluste
 			}
 			return ctrl.Result{}, err
 		}
-		logg.Printf("LLLLLOOOOOKKKKK the name of opensatckcluster and available server ip%v", openStackCluster.Status.AvailableServerIPs[0])
-		// apiServerEndpoint = openStackCluster.Status.AvailableServerIPs[0]
+		apiServerEndpoint = openStackCluster.Status.AvailableServerIPs[0] + ":" + strconv.Itoa(int(cluster.Spec.ControlPlaneEndpoint.Port))
 		//testtesttest
 
 		config.Spec.JoinConfiguration.Discovery.BootstrapToken.APIServerEndpoint = apiServerEndpoint
