@@ -62,6 +62,7 @@ import (
 
 	//testtesttest
 	infrav1 "github.com/gy-ulbak96/cluster-api-provider-openstack/api/v1alpha7"
+	logg "log"
 )
 
 const (
@@ -992,7 +993,7 @@ func (r *KubeadmConfigReconciler) reconcileDiscovery(ctx context.Context, cluste
 			return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
 		}
 
-		// apiServerEndpoint = cluster.Spec.ControlPlaneEndpoint.String()
+		apiServerEndpoint = cluster.Spec.ControlPlaneEndpoint.String()
 
 		//testtesttest
 		openStackCluster := &infrav1.OpenStackCluster{}
@@ -1007,7 +1008,8 @@ func (r *KubeadmConfigReconciler) reconcileDiscovery(ctx context.Context, cluste
 			}
 			return ctrl.Result{}, err
 		}
-		apiServerEndpoint = openStackCluster.Status.AvailableServerIPs[0]
+		logg.Printf("LLLLLOOOOOKKKKK the name of opensatckcluster and available server ip%v", openStackCluster.Status.AvailableServerIPs[0])
+		// apiServerEndpoint = openStackCluster.Status.AvailableServerIPs[0]
 		//testtesttest
 
 		config.Spec.JoinConfiguration.Discovery.BootstrapToken.APIServerEndpoint = apiServerEndpoint

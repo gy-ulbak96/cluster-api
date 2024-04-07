@@ -6488,7 +6488,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.uid
-        image: registry.arc.hcloud.io/bgrtest/k8x-staging-cluster-api/kubeadm-bootstrap-controller-amd64:dev
+        image: registry.arc.hcloud.io/bgrtest/k8s-staging-cluster-api/kubeadm-bootstrap-controller-amd64:dev
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
