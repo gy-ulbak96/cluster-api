@@ -30,9 +30,15 @@ WORKDIR /workspace
 
 # Run this with docker build --build-arg goproxy=$(go env GOPROXY) to override the goproxy
 ARG goproxy=https://proxy.golang.org
+
+RUN apt-get update && apt-get install -y ca-certificates openssl
+ARG cert_location=/usr/local/share/ca-certificates
+RUN openssl s_client -showcerts -connect proxy.golang.org:443 </dev/null 2>/dev/null|openssl x509 -outform PEM >  ${cert_location}/proxy.golang.crt
+# Update certificates
+RUN update-ca-certificates
+
 # Run this with docker build --build-arg package=./controlplane/kubeadm or --build-arg package=./bootstrap/kubeadm
 ENV GOPROXY=$goproxy
-
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum

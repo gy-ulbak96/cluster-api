@@ -36,6 +36,10 @@ import (
 	"sigs.k8s.io/cluster-api/util"
 	"sigs.k8s.io/cluster-api/util/certs"
 	"sigs.k8s.io/cluster-api/util/secret"
+
+	//testtesttest
+	infrav1 "github.com/gy-ulbak96/cluster-api-provider-openstack/api/v1alpha7"
+	"log"
 )
 
 var (
@@ -53,7 +57,7 @@ func FromSecret(ctx context.Context, c client.Reader, cluster client.ObjectKey) 
 }
 
 // New creates a new Kubeconfig using the cluster name and specified endpoint.
-func New(clusterName, endpoint string, caCert *x509.Certificate, caKey crypto.Signer) (*api.Config, error) {
+func New(clusterName client.ObjectKey, endpoint string, caCert *x509.Certificate, caKey crypto.Signer, c client.Client, ctx context.Context) (*api.Config, error) {
 	cfg := &certs.Config{
 		CommonName:   "kubernetes-admin",
 		Organization: []string{"system:masters"},
@@ -70,19 +74,32 @@ func New(clusterName, endpoint string, caCert *x509.Certificate, caKey crypto.Si
 		return nil, errors.Wrap(err, "unable to sign certificate")
 	}
 
-	userName := fmt.Sprintf("%s-admin", clusterName)
-	contextName := fmt.Sprintf("%s@%s", userName, clusterName)
+	userName := fmt.Sprintf("%s-admin", clusterName.Name)
+	contextName := fmt.Sprintf("%s@%s", userName, clusterName.Name)
+
+	//testtesttest
+	openStackCluster := &infrav1.OpenStackCluster{}
+	openStackClusterName := client.ObjectKey{
+		Namespace: clusterName.Namespace,
+		Name:      clusterName.Name,
+	}
+	err = c.Get(ctx, openStackClusterName, openStackCluster)
+	if err != nil {
+		log.Printf("error occured when get openstackcluster %v", err)
+	}
+	log.Printf("OOOPENSTACKCLUSTER %v", openStackCluster.Status.AvailableServerIPs[0])
+	//testtesttest
 
 	return &api.Config{
 		Clusters: map[string]*api.Cluster{
-			clusterName: {
+			clusterName.Name: {
 				Server:                   endpoint,
 				CertificateAuthorityData: certs.EncodeCertPEM(caCert),
 			},
 		},
 		Contexts: map[string]*api.Context{
 			contextName: {
-				Cluster:  clusterName,
+				Cluster:  clusterName.Name,
 				AuthInfo: userName,
 			},
 		},
@@ -223,8 +240,9 @@ func generateKubeconfig(ctx context.Context, c client.Client, clusterName client
 	} else if key == nil {
 		return nil, errors.New("CA private key not found")
 	}
-
-	cfg, err := New(clusterName.Name, endpoint, cert, key)
+	//testtesttest
+	// cfg, err := New(clusterName.Name, endpoint, cert, key)
+	cfg, err := New(clusterName, endpoint, cert, key, c, ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to generate a kubeconfig")
 	}
