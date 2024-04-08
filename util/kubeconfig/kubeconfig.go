@@ -88,12 +88,13 @@ func New(clusterName client.ObjectKey, endpoint string, caCert *x509.Certificate
 		log.Printf("error occured when get openstackcluster %v", err)
 	}
 	log.Printf("OOOPENSTACKCLUSTER %v", openStackCluster.Status.AvailableServerIPs[0])
+	endpoint2 := openStackCluster.Status.AvailableServerIPs[0] + ":6443"
 	//testtesttest
 
 	return &api.Config{
 		Clusters: map[string]*api.Cluster{
 			clusterName.Name: {
-				Server:                   endpoint,
+				Server:                   endpoint2,
 				CertificateAuthorityData: certs.EncodeCertPEM(caCert),
 			},
 		},

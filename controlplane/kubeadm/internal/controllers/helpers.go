@@ -45,12 +45,30 @@ import (
 	"sigs.k8s.io/cluster-api/util/kubeconfig"
 	"sigs.k8s.io/cluster-api/util/patch"
 	"sigs.k8s.io/cluster-api/util/secret"
+
+	//testtesttest
+	infrav1 "github.com/gy-ulbak96/cluster-api-provider-openstack/api/v1alpha7"
+	logg "log"
 )
 
 func (r *KubeadmControlPlaneReconciler) reconcileKubeconfig(ctx context.Context, controlPlane *internal.ControlPlane) (ctrl.Result, error) {
 	log := ctrl.LoggerFrom(ctx)
 
+	//testtesttest
+	openStackCluster := &infrav1.OpenStackCluster{}
+	openStackClusterName := client.ObjectKey{
+		Namespace: controlPlane.Cluster.Namespace, 
+		Name:      controlPlane.Cluster.Name,
+	}
+	err := r.Client.Get(ctx, openStackClusterName, openStackCluster)
+	if err != nil {
+		logg.Printf("error occured when get openstackcluster %v", err)
+	}
+	logg.Printf("LOOK AT THE OPENSTACK CLUTER AVAILABEL %v", openStackCluster.Status.AvailableServerIPs)
+	
+	//testtesttest
 	endpoint := controlPlane.Cluster.Spec.ControlPlaneEndpoint
+	
 	if endpoint.IsZero() {
 		return ctrl.Result{}, nil
 	}
