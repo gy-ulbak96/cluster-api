@@ -58,6 +58,9 @@ import (
 	controlplanev1alpha4 "sigs.k8s.io/cluster-api/internal/apis/controlplane/kubeadm/v1alpha4"
 	"sigs.k8s.io/cluster-api/util/flags"
 	"sigs.k8s.io/cluster-api/version"
+
+	//testtesttest
+	infrav1 "github.com/gy-ulbak96/cluster-api-provider-openstack/api/v1alpha7"
 )
 
 var (
@@ -99,6 +102,7 @@ func init() {
 	_ = controlplanev1.AddToScheme(scheme)
 	_ = bootstrapv1.AddToScheme(scheme)
 	_ = apiextensionsv1.AddToScheme(scheme)
+	_ = infrav1.AddToScheme(scheme)
 }
 
 // InitFlags initializes the flags.
